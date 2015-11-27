@@ -98,4 +98,8 @@ class Negara extends \yii\db\ActiveRecord
 			echo "sukses";
 		}
 	}
+	
+	// contoh jalananin fungsi dalam sebuah kelas
+	$model = new ModelManager;
+	$model->makeModel();
 ?>
