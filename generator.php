@@ -1,14 +1,15 @@
+<?php
 // referensi
 // http://stackoverflow.com/questions/1415577/accessing-variables-and-methods-outside-of-class-definitions
-<?php
 	$hostname;
 	$password;
 	$databaseName;
 
 	Class Params{
-		var $param_name;
-		var $param_type;
-		var $param_long;
+		var $param_name;	// nama parameter (id, username, password, dll)
+		var $param_type;	// tipe data (int, varchar, text, dll)
+		var $param_long;	// panjang tipe data (10,20, dll)
+		var $param_other;	// string lain (auto increment, primary key)
 	}
 	
 	Class Table {
@@ -41,7 +42,60 @@
 	Class ModelManager{
 		// Bikin file model dari yii2 nya di sini. Ambil data dari variable
 		public function makeModel{
+			$file_model = fopen("newfile.php", "w") or die("Unable to open file!");
+			$template = "<?php
 
+namespace app\models;
+
+use Yii;
+
+/**
+ * This is the model class for table 'negara'.
+ *
+ * @property integer \$id
+ * @property string \$nama
+ * @property integer \$jumlah
+ */
+class Negara extends \yii\db\ActiveRecord
+{
+	/**
+	 * @inheritdoc
+	 */
+	public static function tableName()
+	{
+		return 'negara';
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function rules()
+	{
+		return [
+			[['nama', 'jumlah'], 'required'],
+			[['jumlah'], 'integer'],
+			[['nama'], 'string', 'max' => 50]
+		];
+	}
+
+	/**
+	 * @inheritdoc
+	 */
+	public function attributeLabels()
+	{
+		return [
+			'id' => 'ID',
+			'nama' => 'Nama',
+			'jumlah' => 'Jumlah',
+		];
+	}
+}
+
+			";
+			fwrite($file_model, $template);
+			fclose($file_model);
+			
+			echo "sukses";
 		}
 	}
 ?>
