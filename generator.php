@@ -42,15 +42,74 @@
 	Class ModelManager{
 		// Bikin file model dari yii2 nya di sini. Ambil data dari variable
 		public function makeModel(){
-			$value = "negara";
+			// model/table name
+			$value = "negara";	
+			
+			// e.g. attribute of table
+			$b = array(
+				'id' => 'ID',
+				'nama' => 'Nama',
+				'jumlah' => 'Jumlah'
+				);
+			
+			// mengambil template
 			$template = file_get_contents('template.txt');
+			
+			// nama table
 			$template = str_replace("#TABLE#", $value, $template);
+			
+			// nama model
 			$template = str_replace("#MODELNAME#", ucwords($value), $template);
+			
+			// memberi rules
+			$template = str_replace("#RULES#", $this->rules($b), $template);
+			
+			// memberi atribut
+			$template = str_replace("#ATTRIBUTE#", $this->attribute($b), $template);
+			
+			// menulis ke file
 			$newFile = fopen('Result Model/'.ucwords($value).'.php', 'w');
 			fwrite($newFile, $template);
 			fclose($newFile);
 			
+			$this->rules($b);
 			echo "sukses";
+		}
+		
+		public function attribute($data){
+			$result = "";
+			foreach($data as $key => $value){
+				$result = $result."'$key' => '$value',\n			";
+			}
+			return $result;
+		}
+		
+		public function rules($data){
+			$result = "";
+			$required = "";
+			$numItems = count($data);
+			$i = 0;
+			
+			foreach($data as $key => $value){
+				if(++$i === $numItems) {
+					$required = $required."'$key'";
+				} else {
+					$required = $required."'$key',";
+				}
+			}
+			
+			$result = $result."[[".$required."], 'required'],\n			";
+			
+			$i = 0;
+			foreach($data as $key => $value){
+				if(++$i === $numItems) {
+					$result = $result."[['$key'], '$value']\n";
+				} else {
+					$result = $result."[['$key'], '$value'],\n			";
+				}
+			}
+			
+			return $result;
 		}
 	}
 	

@@ -24,9 +24,14 @@ class Negara extends \yii\db\ActiveRecord
 	public function rules()
 	{
 		return [
-			[['nama', 'jumlah'], 'required'],
-			[['jumlah'], 'integer'],
-			[['nama'], 'string', 'max' => 50]
+			[['id','nama','jumlah'], 'required'],
+			[['id'], 'ID'],
+			[['nama'], 'Nama'],
+			[['jumlah'], 'Jumlah']
+
+			// [['nama', 'jumlah'], 'required'],
+			// [['jumlah'], 'integer'],
+			// [['nama'], 'string', 'max' => 50]
 		];
 	}
 
@@ -39,6 +44,10 @@ class Negara extends \yii\db\ActiveRecord
 			'id' => 'ID',
 			'nama' => 'Nama',
 			'jumlah' => 'Jumlah',
+			
+			// 'id' => 'ID',
+			// 'nama' => 'Nama',
+			// 'jumlah' => 'Jumlah',
 		];
 	}
 }

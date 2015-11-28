@@ -24,9 +24,10 @@ class #MODELNAME# extends \yii\db\ActiveRecord
 	public function rules()
 	{
 		return [
-			[['nama', 'jumlah'], 'required'],
-			[['jumlah'], 'integer'],
-			[['nama'], 'string', 'max' => 50]
+			#RULES#
+			// [['nama', 'jumlah'], 'required'],
+			// [['jumlah'], 'integer'],
+			// [['nama'], 'string', 'max' => 50]
 		];
 	}
 
@@ -36,9 +37,10 @@ class #MODELNAME# extends \yii\db\ActiveRecord
 	public function attributeLabels()
 	{
 		return [
-			'id' => 'ID',
-			'nama' => 'Nama',
-			'jumlah' => 'Jumlah',
+			#ATTRIBUTE#
+			// 'id' => 'ID',
+			// 'nama' => 'Nama',
+			// 'jumlah' => 'Jumlah',
 		];
 	}
 }
