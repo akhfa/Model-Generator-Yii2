@@ -8,14 +8,15 @@
 	$databaseName;
 
 	Class Params{
-		var $param_name;	// nama parameter (id, username, password, dll)
-		var $param_type;	// tipe data (int, varchar, text, dll)
-		var $param_long;	// panjang tipe data (10,20, dll)
-		var $param_other;	// string lain (auto increment, primary key)
+		public $param_name;	// nama parameter (id, username, password, dll)
+		public $param_type;	// tipe data (int, varchar, text, dll)
+		public $param_long;	// panjang tipe data (10,20, dll)
+		public $param_other;	// string lain (auto increment, primary key)
 	}
 	
 	Class Table {
-		var $params; //-> array of class Params
+		public $tableName;
+		public $params; //-> array of class Params
 	}
 
 	$tables = array(); //-> untuk ngisi array, pakai array put
@@ -57,12 +58,12 @@
 			global $password;
 			global $databaseName;
 			global $tables;
-			$table = new Table;
 
 			$myfile = fopen($this->nama_file, "r") or die("Unable to open file!");
 			// Output one line until end-of-file
 			while(!feof($myfile)) {
 			  	$line = fgets($myfile);
+//				echo "line = ".$line."\n";
 				if(strpos(strtolower($line), "hostname") === 0)
 				{
 					$line = explode(" ", $line);
@@ -83,11 +84,13 @@
 					$line = explode(" ", $line);
 					$databaseName = $line[1];
 				}
-//				else if(strpos(strtolower($line),"table") === 0)
-//				{
-//					$line = explode(" ", $line);
-//					$tables
-//				}
+				else if(strpos(strtolower($line),"table") !== false)
+				{
+					$table = new Table;
+					$line = explode(" ", $line);
+					$table->tableName = $line[1];
+					array_push($tables, $table);
+				}
 			}
 			fclose($myfile);
 		}
@@ -180,7 +183,9 @@ class Negara extends \yii\db\ActiveRecord
 		echo $username."\n";
 		echo $password."\n";
 		echo $databaseName."\n";
-//		echo $nama_file."\n";
-//		echo $readFile->nama_file;
+		foreach($tables as $table)
+		{
+			echo "tableName = ".$table->tableName."\n";
+		}
 	}
 ?>
