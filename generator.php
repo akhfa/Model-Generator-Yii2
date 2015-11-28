@@ -3,6 +3,7 @@
 // http://stackoverflow.com/questions/1415577/accessing-variables-and-methods-outside-of-class-definitions
 	$nama_file;
 	$hostname;
+	$username;
 	$password;
 	$databaseName;
 
@@ -52,19 +53,41 @@
 		// Masukkan semua objek di file konfigurasi ke variable global. Baca referensi.
 		function importToVariable(){
 			global $hostname;
+			global $username;
 			global $password;
 			global $databaseName;
 			global $tables;
+			$table = new Table;
 
 			$myfile = fopen($this->nama_file, "r") or die("Unable to open file!");
 			// Output one line until end-of-file
 			while(!feof($myfile)) {
 			  	$line = fgets($myfile);
-				if(strpos($line, "ostname") === 1)
+				if(strpos(strtolower($line), "hostname") === 0)
 				{
 					$line = explode(" ", $line);
 					$hostname = $line[1];
 				}
+				else if(strpos(strtolower($line),"user") === 0)
+				{
+					$line = explode(" ", $line);
+					$username = $line[1];
+				}
+				else if(strpos(strtolower($line),"pass") === 0)
+				{
+					$line = explode(" ", $line);
+					$password = $line[1];
+				}
+				else if(strpos(strtolower($line),"data") === 0)
+				{
+					$line = explode(" ", $line);
+					$databaseName = $line[1];
+				}
+//				else if(strpos(strtolower($line),"table") === 0)
+//				{
+//					$line = explode(" ", $line);
+//					$tables
+//				}
 			}
 			fclose($myfile);
 		}
@@ -153,7 +176,10 @@ class Negara extends \yii\db\ActiveRecord
 		$readFile = new TextFileManager;
 		$readFile->setNamaFile($nama_file);
 		$readFile->importToVariable();
-		echo $hostname;
+		echo $hostname."\n";
+		echo $username."\n";
+		echo $password."\n";
+		echo $databaseName."\n";
 //		echo $nama_file."\n";
 //		echo $readFile->nama_file;
 	}
