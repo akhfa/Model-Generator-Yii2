@@ -7,7 +7,7 @@
 	$password;
 	$databaseName;
 
-	Class Params{
+	Class Param{
 		public $param_name;	// nama parameter (id, username, password, dll)
 		public $param_type;	// tipe data (int, varchar, text, dll)
 		public $param_long;	// panjang tipe data (10,20, dll)
@@ -63,7 +63,6 @@
 			// Output one line until end-of-file
 			while(!feof($myfile)) {
 			  	$line = fgets($myfile);
-//				echo "line = ".$line."\n";
 				if(strpos(strtolower($line), "hostname") === 0)
 				{
 					$line = explode(" ", $line);
@@ -87,8 +86,37 @@
 				else if(strpos(strtolower($line),"table") !== false)
 				{
 					$table = new Table;
+					$table->params = array();
+
 					$line = explode(" ", $line);
 					$table->tableName = $line[1];
+
+					// Cari parameternya
+					$lineParam = fgets($myfile);
+					while(strpos($lineParam,"}") === false)
+					{
+						// jika tidak ada "{"
+						if(strpos($lineParam,"{") === false)
+						{
+							$param = new Param;
+							$lineParam = explode(" ", $lineParam, 4);
+							$param->param_name = preg_replace('/\s+/S', "", $lineParam[0]);
+							$param->param_type = $lineParam[1];
+
+							if(is_numeric($lineParam[2]))
+							{
+								$param->param_long = $lineParam[2];
+								$param->param_other = $lineParam[3];
+							}
+							else
+							{
+								$param->param_long = 0;
+								$param->param_other = $lineParam[2]." ".$lineParam[3];
+							}
+							array_push($table->params, $param);
+						}
+						$lineParam = fgets($myfile);
+					}
 					array_push($tables, $table);
 				}
 			}
@@ -186,6 +214,15 @@ class Negara extends \yii\db\ActiveRecord
 		foreach($tables as $table)
 		{
 			echo "tableName = ".$table->tableName."\n";
+			$params = $table->params;
+
+			foreach($params as $param)
+			{
+				echo "param_name = ".$param->param_name."\n";
+				echo "param_type = ".$param->param_type."\n";
+				echo "param_long = ".$param->param_long."\n";
+				echo "param_other = ".$param->param_other."\n";
+			}
 		}
 	}
 ?>
