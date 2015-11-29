@@ -24,13 +24,38 @@
 	Class JsonFileManager{
 		// Melakukan pengecekan pada konfigurasi file, apakah ada kesalahan
 		var $nama_file;
-		public function cekKonfigurasi(){
 
+		public function setFilePath($_path)
+		{
+			$this->nama_file = $_path;
+		}
+
+		public function getFilePath(){
+			return $this->nama_file;
+		}
+
+		public function cekKonfigurasi(){
+			return (strcmp($this->nama_file,"") == 0);
 		}
 
 		// Masukkan semua objek di file konfigurasi ke variable global. Baca referensi.
 		public function importToVariable(){
-
+			if (cekKonfigurasi()){
+				global $hostname;
+				global $username;
+				global $password;
+				global $databaseName;
+				global $tables;
+				$myfile = fopen($this->nama_file, "r") or die("Unable to open file!");
+				$json = fread($myfile,filesize($this->nama_file));
+				fclose($myfile);
+				$json_decode = json_decode($json,true);
+				$hostname = $json_decode->hostname;
+				$username = $json_decode->username;
+				$password = $json_decode->password;
+				$databaseName = $json_decode->database->databasename;
+				$tables = $json_decode->database->tables;
+			}
 		}
 	}
 
