@@ -5,17 +5,17 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table '#TABLE#'.
+ * This is the model class for table 'rumah'.
  *
  */
-class #MODELNAME# extends \yii\db\ActiveRecord
+class Rumah extends \yii\db\ActiveRecord
 {
 	/**
 	 * @inheritdoc
 	 */
 	public static function tableName()
 	{
-		return '#TABLE#';
+		return 'rumah';
 	}
 
 	/**
@@ -24,7 +24,10 @@ class #MODELNAME# extends \yii\db\ActiveRecord
 	public function rules()
 	{
 		return [
-			#RULES#
+			[['alamat','kodepos'], 'required'],
+			[['Alamat'], 'string'],
+			[['Kodepos'], 'string', 'max' => 5]
+
 			// e.g
 			// [['nama', 'alamat', 'jumlah'], 'required'],
 			// [['jumlah'], 'integer'],	#tipe data integer
@@ -39,7 +42,10 @@ class #MODELNAME# extends \yii\db\ActiveRecord
 	public function attributeLabels()
 	{
 		return [
-			#ATTRIBUTE#
+			'Id' => 'Id',
+			'Alamat' => 'Alamat',
+			'Kodepos' => 'Kodepos',
+			
 		];
 	}
 }

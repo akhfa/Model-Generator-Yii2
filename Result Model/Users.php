@@ -5,17 +5,17 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table '#TABLE#'.
+ * This is the model class for table 'users'.
  *
  */
-class #MODELNAME# extends \yii\db\ActiveRecord
+class Users extends \yii\db\ActiveRecord
 {
 	/**
 	 * @inheritdoc
 	 */
 	public static function tableName()
 	{
-		return '#TABLE#';
+		return 'users';
 	}
 
 	/**
@@ -24,7 +24,11 @@ class #MODELNAME# extends \yii\db\ActiveRecord
 	public function rules()
 	{
 		return [
-			#RULES#
+			[['username','password','kode'], 'required'],
+			[['Username'], 'string', 'max' => 15],
+			[['Password'], 'string', 'max' => 50],
+			[['Kode'], 'integer']
+
 			// e.g
 			// [['nama', 'alamat', 'jumlah'], 'required'],
 			// [['jumlah'], 'integer'],	#tipe data integer
@@ -39,7 +43,11 @@ class #MODELNAME# extends \yii\db\ActiveRecord
 	public function attributeLabels()
 	{
 		return [
-			#ATTRIBUTE#
+			'Id' => 'Id',
+			'Username' => 'Username',
+			'Password' => 'Password',
+			'Kode' => 'Kode',
+			
 		];
 	}
 }

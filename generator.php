@@ -133,82 +133,105 @@
 	}
 
 	Class ModelManager{
-		// Bikin file model dari yii2 nya di sini. Ambil data dari variable
-		public function makeModel(){
-			// model/table name
-			$value = "negara";
-
-			// e.g. attribute of table
-			$b = array(
-				'id' => 'ID',
-				'nama' => 'Nama',
-				'jumlah' => 'Jumlah'
-			);
-
+		/* Generate model */
+		public function makeModel($table, $params){
 			// mengambil template
 			$template = file_get_contents('template.txt');
 
 			// nama table
-			$template = str_replace("#TABLE#", $value, $template);
+			$template = str_replace("#TABLE#", strtolower($table), $template);
 
 			// nama model
-			$template = str_replace("#MODELNAME#", ucwords($value), $template);
+			$template = str_replace("#MODELNAME#", ucwords($table), $template);
 
 			// memberi rules
-			$template = str_replace("#RULES#", $this->rules($b), $template);
+			$template = str_replace("#RULES#", $this->rules($params), $template);
 
 			// memberi atribut
-			$template = str_replace("#ATTRIBUTE#", $this->attribute($b), $template);
+			$template = str_replace("#ATTRIBUTE#", $this->attribute($params), $template);
 
 			// menulis ke file
-			$newFile = fopen('Result Model/'.ucwords($value).'.php', 'w');
+			$newFile = fopen('Result Model/'.ucwords($table).'.php', 'w');
 			fwrite($newFile, $template);
 			fclose($newFile);
 
-			$this->rules($b);
 			echo "sukses";
 		}
 
+		/* Generate atribut pada model */
 		public function attribute($data){
 			$result = "";
-			foreach($data as $key => $value){
-				$result = $result."'$key' => '$value',\n			";
+			foreach($data as $value){
+				$result = $result."'".$value->param_name."' => '".$value->param_name."',\n			";
 			}
+
 			return $result;
 		}
 
+		/* Generate atribut pada model */
 		public function rules($data){
-			$result = "";
-			$required = "";
-			$numItems = count($data);
+			array_shift($data);			// skip first element 'id'
+			
+			$required = "";				// hasil pertama
+			$result = "";				// hasil akhir
+			$numItems = count($data);	// menghitung jumlah element
+			
+			## Tahap pertama : 'required'  ##
+			// mengambil dara dari table
 			$i = 0;
-
-			foreach($data as $key => $value){
+			foreach($data as $value){
 				if(++$i === $numItems) {
-					$required = $required."'$key'";
+					$required = $required."'".strtolower($value->param_name)."'";
 				} else {
-					$required = $required."'$key',";
+					$required = $required."'".strtolower($value->param_name)."',";
 				}
 			}
 
+			// hasil pertama berupa record yang 'required' disimpan pada $result
 			$result = $result."[[".$required."], 'required'],\n			";
 
+			## Tahap kedua : rules ##
+			// mengambil data dari table
 			$i = 0;
-			foreach($data as $key => $value){
-				if(++$i === $numItems) {
-					$result = $result."[['$key'], '$value']\n";
-				} else {
-					$result = $result."[['$key'], '$value'],\n			";
+			foreach($data as $value){
+				if(++$i === $numItems) {	// jika element terakhir
+					if(empty($value->param_long) || (!strcmp($value->param_long, "0")) || (!strcmp($this->data_type($value->param_type), "integer"))){
+						// jika tidak ada param_long atau '0' atau param_type='integer'
+						$result = $result."[['".$value->param_name."'], '".$this->data_type($value->param_type)."']\n";
+					} else {
+						$result = $result."[['".$value->param_name."'], '".$this->data_type($value->param_type)."', 'max' => ".$value->param_long."]\n";
+					}
+				} else {	// jika bukan element terakhir
+					if(empty($value->param_long) || (!strcmp($value->param_long, "0")) || (!strcmp($this->data_type($value->param_type), "integer"))){
+						// jika tidak ada param_long atau '0' atau param_type='integer'
+						$result = $result."[['".$value->param_name."'], '".$this->data_type($value->param_type)."'],\n			";
+					} else {
+						$result = $result."[['".$value->param_name."'], '".$this->data_type($value->param_type)."', 'max' => ".$value->param_long."],\n			";
+					}
 				}
 			}
-
+			
+			// hasil dari tahap pertama dan tahap kedua
 			return $result;
 		}
+		
+		/* Konvert tipe data */
+		public function data_type($data){
+			switch (strtolower($data)) {
+				case "integer":
+					return "integer";
+					break;
+				case "varchar":
+					return "string";
+					break;
+				case "text":
+					return "string";
+					break;
+				default:
+					return "";
+			}
+		}
 	}
-	
-	// contoh jalananin fungsi dalam sebuah kelas
-	// $model = new ModelManager;
-	// $model->makeModel();
 
 	// Mulai dari sini udah beneran yaaa
 	//Read argument
@@ -229,14 +252,21 @@
 		{
 			echo "tableName = ".$table->tableName."\n";
 			$params = $table->params;
+			
+			// Generate yii model
+			$model = new ModelManager;
+			$model->makeModel($table->tableName, $params);
 
-			foreach($params as $param)
-			{
-				echo "param_name = ".$param->param_name."\n";
-				echo "param_type = ".$param->param_type."\n";
-				echo "param_long = ".$param->param_long."\n";
-				echo "param_other = ".$param->param_other."\n";
-			}
+			// cara mengambil data pada array
+			// foreach($params as $param)
+			// {
+				// echo "param_name = ".$param->param_name."\n";
+				// echo "param_type = ".$param->param_type."\n";
+				// echo "param_long = ".$param->param_long."\n";
+				// echo "param_other = ".$param->param_other."\n";
+			// }
 		}
 	}
+	
+	
 ?>
