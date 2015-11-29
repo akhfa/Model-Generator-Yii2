@@ -25,12 +25,13 @@
 		// Melakukan pengecekan pada konfigurasi file, apakah ada kesalahan
 		var $nama_file;
 
-		public function setFilePath($_path)
+		function setNamaFile($_filename)
 		{
-			$this->nama_file = $_path;
+			$this->nama_file = $_filename;
 		}
 
-		public function getFilePath(){
+		function getNamaFile()
+		{
 			return $this->nama_file;
 		}
 
@@ -40,22 +41,42 @@
 
 		// Masukkan semua objek di file konfigurasi ke variable global. Baca referensi.
 		public function importToVariable(){
-			if (cekKonfigurasi()){
-				global $hostname;
-				global $username;
-				global $password;
-				global $databaseName;
-				global $tables;
-				$myfile = fopen($this->nama_file, "r") or die("Unable to open file!");
-				$json = fread($myfile,filesize($this->nama_file));
-				fclose($myfile);
-				$json_decode = json_decode($json,true);
-				$hostname = $json_decode->hostname;
-				$username = $json_decode->username;
-				$password = $json_decode->password;
-				$databaseName = $json_decode->database->databasename;
-				$tables = $json_decode->database->tables;
+			global $hostname;
+			global $username;
+			global $password;
+			global $databaseName;
+			global $tables;
+			$myfile = fopen($this->nama_file, "r") or die("Unable to open file!");
+			$json = fread($myfile,filesize($this->nama_file));
+			fclose($myfile);
+			$json_decode = json_decode($json);
+			$hostname = $json_decode->hostname;
+			$username = $json_decode->username;
+			$password = $json_decode->password;
+			$databaseName = $json_decode->database->databasename;
+			$tables = $json_decode->database->tables;
+			foreach ($tables as $table){
+				$table->params = array();
+				foreach ($table->param as $lineParam){
+					$param = new Param;
+					$lineParam = explode(" ", $lineParam, 4);
+					$param->param_name = preg_replace('/\s+/S', "", $lineParam[0]);
+					$param->param_type = $lineParam[1];
+
+					if(is_numeric($lineParam[2]))
+					{
+						$param->param_long = $lineParam[2];
+						$param->param_other = $lineParam[3];
+					}
+					else
+					{
+						$param->param_long = 0;
+						$param->param_other = $lineParam[2]." ".$lineParam[3];
+					}
+					array_push($table->params, $param);
+				}
 			}
+			var_dump($tables);
 		}
 	}
 
@@ -315,9 +336,38 @@
 	// Mulai dari sini udah beneran yaaa
 	//Read argument
 	$nama_file = $argv[1];
-
+	$file_parts = pathinfo($nama_file);
+	$readFile;
 	if(is_null($nama_file))
 		echo "Please set file name as an argument\n";
+	else if (strcmp($file_parts['extension'],"json") == 0){
+		$readFile = new JsonFileManager;
+		$readFile->setNamaFile($nama_file);
+		$readFile->importToVariable();
+		echo $nama_file."\n";
+		echo $hostname."\n";
+		echo $username."\n";
+		echo $password."\n";
+		echo $databaseName."\n";
+		foreach($tables as $table)
+		{
+			echo "tableName = ".$table->tabelname."\n";
+			$params = $table->params;
+			
+			// Generate yii model
+			$model = new ModelManager;
+			$model->makeModel($table->tabelname, $params);
+
+			// cara mengambil data pada array
+			// foreach($params as $param)
+			// {
+				// echo "param_name = ".$param->param_name."\n";
+				// echo "param_type = ".$param->param_type."\n";
+				// echo "param_long = ".$param->param_long."\n";
+				// echo "param_other = ".$param->param_other."\n";
+			// }
+		}
+	}
 	else
 	{
 		$readFile = new TextFileManager;
