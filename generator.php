@@ -126,9 +126,63 @@
 
 	Class DatabaseManager{
 		// Ambil data data yang ada di variable global, terus masukkan ke database
+		
 		public function createDatabase()
 		{
+			global $servername;
+			global $databaseName;
+			global $username;
+			global $password;
 
+			try {
+		    $conn = new PDO("mysql:host=$hostname", $username, $password);
+		    
+		    // set the PDO error mode to exception
+		    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		    $sql = "CREATE DATABASE ".$databaseName;
+
+		    // use exec() because no results are returned
+		    $conn->exec($sql);
+		    echo "Database created successfully<br>";
+		    }
+			catch(PDOException $e){
+		    	echo $sql . "<br>" . $e->getMessage();
+	    	}
+
+			$conn = null;
+		}
+
+		public function createTable($tables) {
+
+			global $servername;
+			global $databaseName;
+			global $username;
+			global $password;
+
+			try {
+			    $conn = new PDO("mysql:host=$servername;dbname=$databaseName", $username, $password);
+			    // set the PDO error mode to exception
+			    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+			    foreach($tables as $table) {
+			    	$sql = "CREATE TABLE ".$table->table_name." (";
+			    	$param = "";
+			    	foreach($table->params as $argument) {
+		 		 		$param = $param.$argument->param_name." ".$argument->param_type."(".$argument->param_long.") ".$argument->param_other.", ";
+					}
+					$postfix = ")";
+				echo $sql.chop($param, " ,").$postfix."\n";
+			    // use exec() because no results are returned
+			    $conn->exec($sql.chop($param, " ,").$postfix);
+			    echo "Table ".$table->table_name." created successfully";
+		    	}
+			    
+			}
+			catch(PDOException $e){
+			    echo $sql . "\n" . $e->getMessage();
+		    }
+
+			$conn = null;
 		}
 	}
 
