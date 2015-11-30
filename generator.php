@@ -335,13 +335,13 @@
 			$numItems = count($data);	// menghitung jumlah element
 			
 			## Tahap pertama : 'required'  ##
-			// mengambil dara dari table
+			// mengambil data dari table
 			$i = 0;
 			foreach($data as $value){
 				if(++$i === $numItems) {
-					$required = $required."'".strtolower($value->param_name)."'";
+					$required = $required."'".$value->param_name."'";
 				} else {
-					$required = $required."'".strtolower($value->param_name)."',";
+					$required = $required."'".$value->param_name."',";
 				}
 			}
 
