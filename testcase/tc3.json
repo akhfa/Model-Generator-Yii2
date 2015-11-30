@@ -1,0 +1,15 @@
+{
+	"hostname": "127.0.0.1",
+	"password": "akhfa",
+	"database": {
+		"tables": [{
+			"tabelname": "users",
+			"param": ["Id integer auto_increment primary key", "Username varchar 15", "Password varchar 50", "Kode integer 10"]
+		}, {
+			"tabelname": "data",
+			"param": ["Id integer auto_increment primary key", "Alamat TEXT", "Kodepos varchar 5"]
+		}],
+		"databasename": "rplsd3"
+	},
+	"username": "root"
+}
