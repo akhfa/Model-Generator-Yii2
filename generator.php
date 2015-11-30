@@ -190,22 +190,58 @@
 			global $hostname;
 
 			try {
-		    $conn = new PDO("mysql:host=$hostname", $username, $password);
-		    
-		    // set the PDO error mode to exception
-		    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		    $sql = "CREATE DATABASE ".$databaseName;
+			    $conn = new PDO("mysql:host=$hostname", $username, $password);
+			    
+			    // set the PDO error mode to exception
+			    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			    $sql = "CREATE DATABASE ".$databaseName;
 
-		    // use exec() because no results are returned
-		    $conn->exec($sql);
-		    echo "Database created successfully\n";
+			    // use exec() because no results are returned
+			    $conn->exec($sql);
+			    echo "Database created successfully\n";
 		    }
 			catch(PDOException $e){
-		    	echo $sql . " --> " . $e->getMessage()."\n";
+				// jika error database exist
+				if(strpos($e->getMessage(), "database exists") !== false)
+				{
+					$this->dropDatabase();
+					return $this->createDatabase();
+				}
+				else
+				{
+					echo $sql . " --> " . $e->getMessage()."\n";
+					return false;
+				}
 	    	}
 
 			$conn = null;
 			return $this->createTable();
+		}
+
+		public function dropDatabase()
+		{
+			global $servername;
+			global $databaseName;
+			global $username;
+			global $password;
+			global $hostname;
+			$sql;
+			try{
+				$conn = new PDO("mysql:host=$hostname", $username, $password);
+			    
+			    // set the PDO error mode to exception
+			    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			    $sql = "DROP DATABASE ".$databaseName;
+
+			    // use exec() because no results are returned
+			    $conn->exec($sql);
+			    return true;
+			}
+			catch(PDOException $e)
+			{
+				echo $sql . " --> " . $e->getMessage()."\n";
+				return false;
+			}
 		}
 
 		public function createTable() {
@@ -392,7 +428,7 @@
 		foreach($tables as $table)
 		{
 			$model = new ModelManager;
-			$model->makeModel($table->tableName, $params);
+			$model->makeModel($table->tableName, $table->params);
 			echo "create model for table ".$table->tableName." success\n";
 		}
 	}
