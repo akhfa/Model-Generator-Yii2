@@ -15,7 +15,7 @@
 	}
 	
 	Class Table {
-		public $tableName;
+		public $tabelname;
 		public $params; //-> array of class Params
 	}
 
@@ -139,7 +139,7 @@
 					$table->params = array();
 
 					$line = explode(" ", $line);
-					$table->tableName = $line[1];
+					$table->tabelname = $line[1];
 
 					// Cari parameternya
 					$lineParam = fgets($myfile);
@@ -259,7 +259,7 @@
 			    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 			    foreach($tables as $table) {
-			    	$sql = "CREATE TABLE ".$table->tableName." (";
+			    	$sql = "CREATE TABLE ".$table->tabelname." (";
 			    	$param = "";
 			    	foreach($table->params as $argument) {
 			    		if($argument->param_long === 0)
@@ -276,7 +276,7 @@
 
 			    // use exec() because no results are returned
 			    $conn->exec($sql.chop($param, " ,").$postfix);
-			    echo "Table ".$table->tableName." created successfully\n";
+			    echo "Table ".$table->tabelname." created successfully\n";
 		    	}
 			}
 			catch(PDOException $e){
@@ -428,8 +428,8 @@
 		foreach($tables as $table)
 		{
 			$model = new ModelManager;
-			$model->makeModel($table->tableName, $table->params);
-			echo "create model for table ".$table->tableName." success\n";
+			$model->makeModel($table->tabelname, $table->params);
+			echo "create model for table ".$table->tabelname." success\n";
 		}
 	}
 	else
