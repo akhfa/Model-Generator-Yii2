@@ -198,13 +198,14 @@
 
 		    // use exec() because no results are returned
 		    $conn->exec($sql);
-		    echo "Database created successfully<br>";
+		    echo "Database created successfully\n";
 		    }
 			catch(PDOException $e){
-		    	echo $sql . "<br>" . $e->getMessage();
+		    	echo $sql . " --> " . $e->getMessage()."\n";
 	    	}
 
 			$conn = null;
+			return $this->createTable();
 		}
 
 		public function createTable() {
@@ -225,20 +226,31 @@
 			    	$sql = "CREATE TABLE ".$table->tableName." (";
 			    	$param = "";
 			    	foreach($table->params as $argument) {
-		 		 		$param = $param.$argument->param_name." ".$argument->param_type."(".$argument->param_long.") ".$argument->param_other.", ";
+			    		if($argument->param_long === 0)
+			    		{
+			    			$param = $param.$argument->param_name." ".$argument->param_type." ".$argument->param_other.", ";
+			    		}
+			    		else
+			    		{
+			    			$param = $param.$argument->param_name." ".$argument->param_type."(".$argument->param_long.") ".$argument->param_other.", ";
+			    		}
 					}
 					$postfix = ")";
 				echo $sql.chop($param, " ,").$postfix."\n";
+
 			    // use exec() because no results are returned
 			    $conn->exec($sql.chop($param, " ,").$postfix);
-			    echo "Table ".$table->tableName." created successfully";
+			    echo "Table ".$table->tableName." created successfully\n";
 		    	}
 			}
 			catch(PDOException $e){
 			    echo $sql . "\n" . $e->getMessage();
+			    return false;
 		    }
 
 			$conn = null;
+
+			return true;
 		}
 	}
 
@@ -359,24 +371,6 @@
 		echo $username."\n";
 		echo $password."\n";
 		echo $databaseName."\n";
-		foreach($tables as $table)
-		{
-			echo "tableName = ".$table->tabelname."\n";
-			$params = $table->params;
-			
-			// Generate yii model
-			$model = new ModelManager;
-			$model->makeModel($table->tabelname, $params);
-
-			// cara mengambil data pada array
-			// foreach($params as $param)
-			// {
-				// echo "param_name = ".$param->param_name."\n";
-				// echo "param_type = ".$param->param_type."\n";
-				// echo "param_long = ".$param->param_long."\n";
-				// echo "param_other = ".$param->param_other."\n";
-			// }
-		}
 	}
 	else
 	{
@@ -387,32 +381,23 @@
 		echo $username."\n";
 		echo $password."\n";
 		echo $databaseName."\n";
-		foreach($tables as $table)
-		{
-			echo "tableName = ".$table->tableName."\n";
-			$params = $table->params;
-			
-			// Generate yii model
-			$model = new ModelManager;
-			$model->makeModel($table->tableName, $params);
-
-			// cara mengambil data pada array
-			foreach($params as $param)
-			{
-				echo "param_name = ".$param->param_name."\n";
-				echo "param_type = ".$param->param_type."\n";
-				echo "param_long = ".$param->param_long."\n";
-				echo "param_other = ".$param->param_other."\n";
-			}
-
-
-		}
 	}
-	
+
 	// tulis model ke php
 	$dbManager = new DatabaseManager;
-	$dbManager->createDatabase();
-	$dbManager->createTable();
-
-	// echo is_numeric(10);
+	
+	if($dbManager->createDatabase())
+	{
+		// Generate yii model
+		foreach($tables as $table)
+		{
+			$model = new ModelManager;
+			$model->makeModel($table->tableName, $params);
+			echo "create model for table ".$table->tableName." success\n";
+		}
+	}
+	else
+	{
+		echo "database fail\n";
+	}
 ?>
