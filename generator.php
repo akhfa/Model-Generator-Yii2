@@ -110,9 +110,8 @@
 			while(!feof($myfile)) {
 			  	$line = fgets($myfile);
 
-			  	// hilangkan \n di sini
-			  	// $search = array("\r\n", "\n");
-			  	// $line = str_replace($search, "", $lineKotor);
+			  	// hilangkan newline
+			  	$line = trim(preg_replace('/\s+/', ' ', $line));
 				
 				if(strpos(strtolower($line), "hostname") === 0)
 				{
@@ -144,6 +143,8 @@
 
 					// Cari parameternya
 					$lineParam = fgets($myfile);
+					$lineParam = trim(preg_replace('/\s+/', ' ', $lineParam));
+
 					while(strpos($lineParam,"}") === false)
 					{
 						// jika tidak ada "{"
@@ -168,6 +169,7 @@
 							array_push($table->params, $param);
 						}
 						$lineParam = fgets($myfile);
+						$lineParam = trim(preg_replace('/\s+/', ' ', $lineParam));
 					}
 					array_push($tables, $table);
 				}
@@ -212,6 +214,7 @@
 			global $username;
 			global $password;
 			global $tables;
+			$sql;
 
 			try {
 			    $conn = new PDO("mysql:host=$servername;dbname=$databaseName", $username, $password);
