@@ -1,17 +1,18 @@
 Hostname 127.0.0.1 
 User root 
-Password akhfa 
-Database Mysistem { 
+Password
+Database rplsd1 { 
 	Table Users 
 	{ 
-		Id integer auto increment
+		Id integer 5 auto increment 
 		Username varchar 15 primary key 
 		Password varchar 50 
-		Kode integer 10
+		Kode varchar 10 
 	} 
 	Table rumah { 
-		Id integer auto increment 
-		Alamat TEXT 0
+		Id integer 5 auto increment 
+		Alamat TEXT 10 
 		Kodepos varchar 5 
+		Kode varchar 10 
 	} 
-}
+} 

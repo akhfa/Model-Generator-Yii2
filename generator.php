@@ -109,6 +109,11 @@
 			// Output one line until end-of-file
 			while(!feof($myfile)) {
 			  	$line = fgets($myfile);
+
+			  	// hilangkan \n di sini
+			  	// $search = array("\r\n", "\n");
+			  	// $line = str_replace($search, "", $lineKotor);
+				
 				if(strpos(strtolower($line), "hostname") === 0)
 				{
 					$line = explode(" ", $line);
@@ -149,6 +154,7 @@
 							$param->param_name = preg_replace('/\s+/S', "", $lineParam[0]);
 							$param->param_type = $lineParam[1];
 
+							// echo "is_numeric ".$lineParam[2]." = ".is_numeric($lineParam[2])."\n";
 							if(is_numeric($lineParam[2]))
 							{
 								$param->param_long = $lineParam[2];
@@ -198,12 +204,13 @@
 			$conn = null;
 		}
 
-		public function createTable($tables) {
+		public function createTable() {
 
 			global $servername;
 			global $databaseName;
 			global $username;
 			global $password;
+			global $tables;
 
 			try {
 			    $conn = new PDO("mysql:host=$servername;dbname=$databaseName", $username, $password);
@@ -211,7 +218,7 @@
 			    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 			    foreach($tables as $table) {
-			    	$sql = "CREATE TABLE ".$table->table_name." (";
+			    	$sql = "CREATE TABLE ".$table->tableName." (";
 			    	$param = "";
 			    	foreach($table->params as $argument) {
 		 		 		$param = $param.$argument->param_name." ".$argument->param_type."(".$argument->param_long.") ".$argument->param_other.", ";
@@ -220,9 +227,8 @@
 				echo $sql.chop($param, " ,").$postfix."\n";
 			    // use exec() because no results are returned
 			    $conn->exec($sql.chop($param, " ,").$postfix);
-			    echo "Table ".$table->table_name." created successfully";
+			    echo "Table ".$table->tableName." created successfully";
 		    	}
-			    
 			}
 			catch(PDOException $e){
 			    echo $sql . "\n" . $e->getMessage();
@@ -333,7 +339,7 @@
 		}
 	}
 
-	// Mulai dari sini udah beneran yaaa
+	//main procedure
 	//Read argument
 	$nama_file = $argv[1];
 	$file_parts = pathinfo($nama_file);
@@ -387,15 +393,22 @@
 			$model->makeModel($table->tableName, $params);
 
 			// cara mengambil data pada array
-			// foreach($params as $param)
-			// {
-				// echo "param_name = ".$param->param_name."\n";
-				// echo "param_type = ".$param->param_type."\n";
-				// echo "param_long = ".$param->param_long."\n";
-				// echo "param_other = ".$param->param_other."\n";
-			// }
+			foreach($params as $param)
+			{
+				echo "param_name = ".$param->param_name."\n";
+				echo "param_type = ".$param->param_type."\n";
+				echo "param_long = ".$param->param_long."\n";
+				echo "param_other = ".$param->param_other."\n";
+			}
+
+
 		}
 	}
 	
-	
+	// tulis model ke php
+	$dbManager = new DatabaseManager;
+	$dbManager->createDatabase();
+	$dbManager->createTable();
+
+	// echo is_numeric(10);
 ?>
