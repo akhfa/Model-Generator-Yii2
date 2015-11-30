@@ -27,7 +27,7 @@ class Users extends \yii\db\ActiveRecord
 			[['username','password','kode'], 'required'],
 			[['Username'], 'string', 'max' => 15],
 			[['Password'], 'string', 'max' => 50],
-			[['Kode'], 'integer']
+			[['Kode'], 'string', 'max' => 10]
 
 			// e.g
 			// [['nama', 'alamat', 'jumlah'], 'required'],

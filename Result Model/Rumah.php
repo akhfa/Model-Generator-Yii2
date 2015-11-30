@@ -24,9 +24,10 @@ class Rumah extends \yii\db\ActiveRecord
 	public function rules()
 	{
 		return [
-			[['alamat','kodepos'], 'required'],
-			[['Alamat'], 'string'],
-			[['Kodepos'], 'string', 'max' => 5]
+			[['alamat','kodepos','kode'], 'required'],
+			[['Alamat'], 'string', 'max' => 10],
+			[['Kodepos'], 'string', 'max' => 5],
+			[['Kode'], 'string', 'max' => 10]
 
 			// e.g
 			// [['nama', 'alamat', 'jumlah'], 'required'],
@@ -45,6 +46,7 @@ class Rumah extends \yii\db\ActiveRecord
 			'Id' => 'Id',
 			'Alamat' => 'Alamat',
 			'Kodepos' => 'Kodepos',
+			'Kode' => 'Kode',
 			
 		];
 	}

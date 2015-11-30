@@ -185,6 +185,7 @@
 			global $databaseName;
 			global $username;
 			global $password;
+			global $hostname;
 
 			try {
 		    $conn = new PDO("mysql:host=$hostname", $username, $password);
