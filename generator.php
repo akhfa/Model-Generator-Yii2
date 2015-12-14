@@ -66,12 +66,14 @@
 					if(is_numeric($lineParam[2]))
 					{
 						$param->param_long = $lineParam[2];
-						$param->param_other = $lineParam[3];
+						if(isset($lineParam[3]))
+							$param->param_other = $lineParam[3];
 					}
 					else
 					{
 						$param->param_long = 0;
-						$param->param_other = $lineParam[2]." ".$lineParam[3];
+						if(isset($lineParam[3]))
+							$param->param_other = $lineParam[2]." ".$lineParam[3];
 					}
 					array_push($table->params, $param);
 				}
@@ -156,15 +158,18 @@
 							$param->param_type = $lineParam[1];
 
 							// echo "is_numeric ".$lineParam[2]." = ".is_numeric($lineParam[2])."\n";
+							// echo "$lineParam[1]\n";
 							if(is_numeric($lineParam[2]))
 							{
 								$param->param_long = $lineParam[2];
-								$param->param_other = $lineParam[3];
+								if(isset($lineParam[3]))
+									$param->param_other = $lineParam[3];
 							}
 							else
 							{
 								$param->param_long = 0;
-								$param->param_other = $lineParam[2]." ".$lineParam[3];
+								if(isset($lineParam[3]))
+									$param->param_other = $lineParam[2]." ".$lineParam[3];
 							}
 							array_push($table->params, $param);
 						}
@@ -297,7 +302,7 @@
 			$template = file_get_contents('template.txt');
 
 			// nama table
-			$template = str_replace("#TABLE#", strtolower($table), $template);
+			$template = str_replace("#TABLE#", $table, $template);
 
 			// nama model
 			$template = str_replace("#MODELNAME#", ucwords($table), $template);
